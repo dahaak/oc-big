@@ -1,0 +1,418 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+OC-Big Data
+https://code.google.com/p/oc-big/
+ 
+Index HTML File 
+ 
+Copyright (c) 2014, Daniel Haak, Johan Gehlen, Praveen Sripad, Thomas M. Deserno, Department of Medical Informatics, RWTH Aachen University
+
+Based on JQuery File Upload Demo 
+http://blueimp.github.io/jQuery-File-Upload/
+Thanks to Sebastian Tschan
+-->
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta name="viewport" content="width=device-width">
+		<meta http-equiv="X-UA-Compatible" content="IE=8" />
+		<title>OC-Big Data</title>
+
+		<!-- Styles Includes -->
+		
+		<!-- OC -->
+		<link rel="stylesheet" href="openclinica/styles.css" type="text/css"/>
+		<link rel="stylesheet" type="text/css" media="all" href="openclinica/new_cal/skins/aqua/theme.css" title="Aqua" />
+		
+		
+		<!-- Script Includes -->
+		
+		<!-- Bugreports -->
+		<script type="text/javascript">
+			function reportBug() {
+			    var bugtrack = "https://www.openclinica.com/OpenClinica/bug.php?version=3.1.2-Community&user=";
+			    var user= "jgehlen";
+			    bugtrack = bugtrack + user+ "&url=" + window.location.href;
+			    openDocWindow(bugtrack);
+			}
+			function pageWidth() {return window.innerWidth != null? window.innerWidth: document.documentElement && document.documentElement.clientWidth ? document.documentElement.clientWidth:document.body != null? document.body.clientWidth:null;}
+			function pageHeight() {return window.innerHeight != null? window.innerHeight: document.documentElement && document.documentElement.clientHeight ? document.documentElement.clientHeight:document.body != null? document.body.clientHeight:null;}
+			function posLeft() {return typeof window.pageXOffset != 'undefined' ? window.pageXOffset:document.documentElement && document.documentElement.scrollLeft? document.documentElement.scrollLeft:document.body.scrollLeft? document.body.scrollLeft:0;}
+			function posTop() {return typeof window.pageYOffset != 'undefined' ? window.pageYOffset:document.documentElement && document.documentElement.scrollTop? document.documentElement.scrollTop: document.body.scrollTop?document.body.scrollTop:0;}
+			function $(x){return document.getElementById(x);}
+			function scrollFix(){var obol=$('ol');obol.style.top=posTop()+'px';obol.style.left=posLeft()+'px'}
+			function sizeFix(){var obol=$('ol');obol.style.height=pageHeight()+'px';obol.style.width=pageWidth()+'px';}
+			function kp(e){ky=e?e.which:event.keyCode;if(ky==88||ky==120)hm();return false}
+			function inf(h){tag=document.getElementsByTagName('select');for(i=tag.length-1;i>=0;i--)tag[i].style.visibility=h;tag=document.getElementsByTagName('iframe');for(i=tag.length-1;i>=0;i--)tag[i].style.visibility=h;tag=document.getElementsByTagName('object');for(i=tag.length-1;i>=0;i--)tag[i].style.visibility=h;}
+			function sm(obl, wd, ht){var h='hidden';var b='block';var p='px';var obol=$('ol'); var obbxd = $('mbd');obbxd.innerHTML = $(obl).innerHTML;obol.style.height=pageHeight()+p;obol.style.width=pageWidth()+p;obol.style.top=posTop()+p;obol.style.left=posLeft()+p;obol.style.display=b;var tp=posTop()+((pageHeight()-ht)/2)-12;var lt=posLeft()+((pageWidth()-wd)/2)-12;var obbx=$('mbox');obbx.style.top=(tp<0?0:tp)+p;obbx.style.left=(lt<0?0:lt)+p;obbx.style.width=wd+p;obbx.style.height=ht+p;inf(h);obbx.style.display=b;return false;}
+			function hm(){var v='visible';var n='none';$('ol').style.display=n;$('mbox').style.display=n;inf(v);document.onkeypress=''}
+
+			function initmb(){var ab='absolute';var n='none';var obody=document.getElementsByTagName('body')[0];var frag=document.createDocumentFragment();var obol=document.createElement('div');obol.setAttribute('id','ol');obol.style.display=n;obol.style.position=ab;obol.style.top=0;obol.style.left=0;obol.style.zIndex=998;obol.style.width='100%';frag.appendChild(obol);var obbx=document.createElement('div');obbx.setAttribute('id','mbox');obbx.style.display=n;obbx.style.position=ab;obbx.style.zIndex=999;var obl=document.createElement('span');obbx.appendChild(obl);var obbxd=document.createElement('div');obbxd.setAttribute('id','mbd');obl.appendChild(obbxd);frag.insertBefore(obbx,obol.nextSibling);obody.insertBefore(frag,obody.firstChild);
+			    window.onscroll = scrollFix; window.onresize = sizeFix;
+			}
+
+			var StatusBoxValue=1;
+		</script>
+
+		<!-- Zip scripts -->
+		<script type="text/javascript" src="js/zip.js"></script>
+		<script type="text/javascript" src="js/zip_controller.js"></script>
+
+
+		<!-- File Upload scripts -->
+
+		<!-- Bootstrap CSS Toolkit styles -->
+		<!-- this file was cropped to use the OC style-->
+		<link rel="stylesheet" href="css/bootstrap.min.css">
+		<!-- Generic page styles -->
+		<!--<link rel="stylesheet" href="css/style.css">-->
+		<!-- Bootstrap styles for responsive website layout, supporting different screen sizes -->
+		<link rel="stylesheet" href="http://blueimp.github.com/cdn/css/bootstrap-responsive.min.css">
+		<!-- Bootstrap CSS fixes for IE6 -->
+		<!--[if lt IE 7]><link rel="stylesheet" href="http://blueimp.github.com/cdn/css/bootstrap-ie6.min.css"><![endif]-->
+		<!-- Bootstrap Image Gallery styles -->
+		<link rel="stylesheet" href="http://blueimp.github.com/Bootstrap-Image-Gallery/css/bootstrap-image-gallery.min.css">
+		<!-- CSS to style the file input field as button and adjust the Bootstrap progress bars -->
+		<link rel="stylesheet" href="css/jquery.fileupload-ui.css">
+		<!-- CSS adjustments for browsers with JavaScript disabled -->
+		<noscript><link rel="stylesheet" href="css/jquery.fileupload-ui-noscript.css"></noscript>
+		<!-- Shim to make HTML5 elements usable in older Internet Explorer versions -->
+		<!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+		<!-- The jQuery UI widget factory, can be omitted if jQuery UI is already included -->
+		<script src="js/vendor/jquery.ui.widget.js"></script>
+		<!-- The Templates plugin is included to render the upload/download listings -->
+		<script src="http://blueimp.github.com/JavaScript-Templates/tmpl.min.js"></script>
+		<!-- The Load Image plugin is included for the preview images and image resizing functionality -->
+		<script src="http://blueimp.github.com/JavaScript-Load-Image/load-image.min.js"></script>
+		<!-- The Canvas to Blob plugin is included for image resizing functionality -->
+		<script src="http://blueimp.github.com/JavaScript-Canvas-to-Blob/canvas-to-blob.min.js"></script>
+		<!-- Bootstrap JS and Bootstrap Image Gallery are not required, but included for the demo -->
+		<script src="http://blueimp.github.com/cdn/js/bootstrap.min.js"></script>
+		<script src="http://blueimp.github.com/Bootstrap-Image-Gallery/js/bootstrap-image-gallery.min.js"></script>
+		<!-- The Iframe Transport is required for browsers without support for XHR file uploads -->
+		<script src="js/jquery.iframe-transport.js"></script>
+		<!-- The basic File Upload plugin -->
+		<script src="js/jquery.fileupload.js"></script>
+		<!-- The File Upload file processing plugin -->
+		<script src="js/jquery.fileupload-fp.js"></script>
+		<!-- The File Upload user interface plugin -->
+		<script src="js/jquery.fileupload-ui.js"></script>
+		<!-- The main application script -->
+		<script src="js/file_upload_controller.js"></script>
+
+
+		<!-- Templates -->
+
+		<!-- The template to display files available for upload -->
+		<script id="template-upload" type="text/x-tmpl">
+
+
+
+		<!-- The template to display files available for upload -->
+		<script id="template-upload" type="text/x-tmpl">
+		{% for (var i=0, file; file=o.files[i]; i++) { %}
+			<tr class="template-upload fade">
+				<td class="preview"><span class="fade"></span></td>
+				<td class="name"><span>{%=file.name%}</span></td>
+				<td class="size"><span>{%=o.formatFileSize(file.size)%}</span></td>
+				{% if (file.error) { %}
+					<td class="error" colspan="2"><span class="label label-important">Error</span> {%=file.error%}</td>
+				{% } else if (o.files.valid && !i) { %}
+					<td>
+						<div class="progress progress-success progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="bar" style="width:0%;"></div></div>
+					</td>
+					<td>{% if (!o.options.autoUpload) { %}
+						<button class="btn button_oc btn-primary start">
+							<i class="icon-upload icon-white"></i>
+							<span>Start</span>
+						</button>
+					{% } %}</td>
+				{% } else { %}
+					<td colspan="2"></td>
+				{% } %}
+				<td>{% if (!i) { %}
+					<button class="btn button_oc btn-warning cancel">
+						<i class="icon-ban-circle icon-white"></i>
+						<span>Cancel</span>
+					</button>
+				{% } %}</td>
+			</tr>
+		{% } %}
+		</script>
+		<!-- The template to display files available for download -->
+		<script id="template-download" type="text/x-tmpl">
+		{% for (var i=0, file; file=o.files[i]; i++) { %}
+			<tr class="template-download fade">
+				{% if (file.error) { %}
+					<td></td>
+					<td class="name"><span>{%=file.name%}</span></td>
+					<td class="size"><span>{%=o.formatFileSize(file.size)%}</span></td>
+					<td class="error" colspan="2"><span class="label label-important">Error</span> {%=file.error%}</td>
+				{% } else { %}
+					<td class="preview">{% if (file.thumbnail_url) { %}
+						<a href="{%=file.url%}" title="{%=file.name%}" data-gallery="gallery" download="{%=file.name%}"><img src="{%=file.thumbnail_url%}"></a>
+					{% } %}</td>
+					<td class="name">
+						<a href="{%=file.url%}" title="{%=file.name%}" data-gallery="{%=file.thumbnail_url&&'gallery'%}" download="{%=file.name%}">{%=file.name%}</a>
+					</td>
+					<td class="size"><span>{%=o.formatFileSize(file.size)%}</span></td>
+					<td colspan="2"></td>
+				{% } %}
+				<td>
+					<button class="btn button_oc btn-danger delete" data-type="{%=file.delete_type%}" data-url="{%=file.delete_url%}"{% if (file.delete_with_credentials) { %} data-xhr-fields='{"withCredentials":true}'{% } %}>
+						<i class="icon-trash icon-white"></i>
+						<span style="margin-right:18px;">Delete</span>
+					</button>
+					<input type="checkbox" name="delete" value="1" class="toggle">
+				</td>
+			</tr>
+		{% } %}
+		</script>
+
+		<!-- The function called when we close the window or tab and it clears all files in current session - prav 140413 -->
+
+		<script>
+		//script for setting values in the parent document
+		function submitVal(){
+			setVal();
+			$.ajax({
+				type: "GET", 
+				url: "/oc-db-100/server/php/files_clear.php",
+                                success: function(response){
+                                    window.close();
+                                }
+			});
+		}
+				
+		// function to set the values in the eCRF
+		function setVal() {
+			//store the uploaded file names in an array 
+			var uploadedElements = [];
+			var list = document.getElementsByTagName('a');
+			for(var i=0; i<list.length-1; i++) {
+				//only add elements that are uploaded
+				var file = list[i].getAttribute('download');
+				if(!(file.indexOf("_blob") > 0)) {
+					//the preview of images generates an extra tag
+					if(file.indexOf(".jpg") >0 || file.indexOf(".png") > 0) {
+						i++
+						uploadedElements.push(file);
+					}
+					else {
+						uploadedElements.push(file);
+					}
+				}
+			}
+			var list2 = document.getElementById('file-list').childNodes;
+			for(var i=0; i<list2.length; i++) {
+				//add zipped elements that were uploaded
+				uploadedElements.push(list2[i].textContent);
+			}			
+			//create a string concatenated with ',' from the array
+			var uploadedFiles = uploadedElements.join(',');
+			//get the field that called this window for the return address
+			//do this only when uploadedFiles is not empty
+			if(uploadedFiles != '')	{		
+				var field = getParam('field');
+				//set file names in parent window and close the upload popup
+				if(window.opener.document.crfForm != null){
+					if(window.opener.document.crfForm.elements[field].value == '') {
+						window.opener.document.crfForm.elements[field].value = uploadedFiles;
+					} else {
+						window.opener.document.crfForm.elements[field].value = 
+						window.opener.document.crfForm.elements[field].value + ',' + uploadedFiles;
+					}
+				}
+			}
+		}
+		//setTimeout("window.close();",300);
+		//function to get params from the url in the popup
+		function getParam(param){ 
+			//get the param string of the url
+			var url = window.location.search.substring(1); 
+			//split at '&' to get the parameters
+			var params = url.split("&"); 
+			//split at '=' to get the parameter and corresponding value
+			for (var i = 0; i < params.length; i++) {  
+				var paramPair = params[i].split("=");  
+				if(paramPair[0] == param){
+					//the last value has a %val attached, crop just in case
+					var value = paramPair[1].split("%")
+				return value[0];
+				}
+			}
+		}
+			   
+		$(function () {
+			$('#fileupload').fileupload({
+				add: function(e, data){
+					$.each(data.files, function (index, element){
+						element.name = getParam("studyName")+"_"+getParam("id")+"_"+name;
+					});
+					var jqXHR = data.submit();
+				},
+			});
+		});
+		</script>
+	</head>
+
+	<body class="main_BG" topmargin="0" leftmargin="0" marginwidth="0" marginheight="0">
+		<!-- Header Table -->
+		<div width="100%" height="100%">
+			<table class="header" cellspacing="0" cellpadding="0" border="0">
+				<tbody>
+					<tr>
+						<td>
+							<div class="logo"><img src="images/Logo.gif"></div>
+						</td>
+						<td valign="top">
+			
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<br style="line-height: 4px;">
+		<!-- Body Header-->
+		<div width="100%" height="100%">
+			<table>
+				<tr>
+					<td width="120">
+					</td>
+					<td width="784">
+						<h1 align="center"> 
+							<span class="title_manage">OpenClinica-Big Data</span>
+						</h1>
+					</td>
+					<td width="120">
+					</td>
+				</tr>
+			</table>
+
+		</div>
+		<!-- Text Body -->
+		<div width="100%" height="100%">
+			<table>
+				<tr>
+					<td width="120">
+					</td>
+					<td width="784">
+						<h3>Upload</h3>
+						<br>
+						<!-- The file upload form used as target for the file upload widget -->
+						<form id="fileupload" action="//jquery-file-upload.appspot.com/" method="post" enctype="multipart/form-data">
+							Here you can upload multiple files without file size limits. The file names are annotated with the Study and Subject ID. If you want to accelerate the upload progress, use "Zip and Upload".
+							<p></p>
+							<!-- Redirect browsers with JavaScript disabled to the origin page -->
+							<!--<noscript><input type="hidden" name="redirect" value="http://blueimp.github.com/jQuery-File-Upload/"></noscript>-->
+							<!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
+							<div class="row fileupload-buttonbar">
+							   <div class="span7">
+									<!-- The fileinput-button span is used to style the file input field as button -->
+									<span class="btn btn-success button_oc fileinput-button">
+										<i class="icon-plus icon-white"></i>
+										<span style="vertical-align:middle;margin-left:8px;">Select files</span>
+										<input type="file" name="files[]" multiple>
+									</span>
+									<!-- exclude buttons for start upload and cancel upload
+									<button type="submit" class="btn btn-primary start">
+										<i class="icon-upload icon-white"></i>
+									   <span>Start upload</span>
+									</button>
+									<button type="reset" class="btn btn-warning cancel">
+										<i class="icon-ban-circle icon-white"></i>
+										<span>Cancel upload</span>
+									</button>-->
+									<button type="button" class="btn btn-danger button_oc delete">
+										<i class="icon-trash icon-white"></i>
+										<span style="margin-right:18px;">Delete</span>
+									</button>
+									<input type="checkbox" class="toggle"> All
+								</div>
+								<!-- The global progress information -->
+								<div class="span5 fileupload-progress fade">
+									<!-- The global progress bar -->
+									<div class="progress progress-success progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+										<div class="bar" style="width:0%;"></div>
+									</div>
+									<!-- The extended global progress information -->
+									<div class="progress-extended">&nbsp;</div>
+								</div>
+							</div>
+							<!-- The loading indicator is shown during file processing -->
+							<div class="fileupload-loading"></div>
+							<br>
+							<!-- The table listing the files available for upload/download -->
+							<!-- Added target= _blank to make all files open in new window/tabs when clicked upon - prav 140413 -->
+							<table role="presentation" class="table table-striped"><tbody class="files" data-toggle="modal-gallery" data-target="#modal-gallery" target="_blank"></tbody></table>
+						</form>
+					</td>
+					<td width="120">
+					</td>
+				</tr>
+				<tr>
+					<td width="120">
+					</td>
+					<td width="784">
+						<h3>Zip and Upload</h3>
+						Here you can accelerate the upload process by zipping your files before transfer. For this, the files are temporally stored in your local memory. If the file size exceeds your free memory space "Zip and Upload" will not work. Please use normal Upload instead.
+						<p></p>
+
+									<select style="visibility:hidden;" id="creation-method-input">
+										<option value="Blob">RAM</option>
+										<option value="File">HDD</option>
+									</select>
+									<span class="btn btn-success button_oc fileinput-button">
+										<i class="icon-plus icon-white"></i>
+										<span style="vertical-align:middle;margin-left:6px;">Add files...</span>
+										<input type="file" multiple id="file-input">
+									</span>
+									<ul id="file-list"></ul>
+
+					</td>
+					<td width="120">
+					</td>
+				</tr>
+				<tr>
+					<td width="120">
+					</td>
+					<td width="784">
+						<h3>Finish and Fill eCRF</h3>
+						Click the "Finish Upload" button after all files are transferred. Window is closed, history deleted and your uploaded files are entered in the eCRF and connected with Study and Subject. 
+						<p></p>
+						<div class="row fileupload-buttonbar">
+							<div class="span7">
+								<button type="button" onclick='submitVal()' class="btn button_oc" background-color="#789ecs">
+									<i class="icon-plus icon-white"></i>
+									<span style="margin-right:18px;vertical-align:middle;">Finish upload</span>
+								</button>
+							</div>
+						</div>
+					</td>
+					<td width="120">
+					</td>
+				</tr>
+			</table>
+		</div>
+		<!-- Footer --> 
+		<br /><br />
+		<br style="line-height: 4px;">
+		<div width="100%" height="100%">
+			<table>
+				<tr>
+					<td width="120">
+					</td>
+					<td width="784">
+						OC-Big Data, Version 1.0.0, <a target="_blank" href="http://opensource.org/licenses/BSD-2-Clause">Licensed under the BSD-2-Clauses license</a>
+						<br> Copyright 2013, Daniel Haak, Johan Gehlen, Praveen Sripad, Thomas M. Deserno. Department of Medical Informatics. RWTH Aachen. 
+					</td>
+					<td width="120">
+					</td>
+				</tr>				
+			</table>
+		</div>
+	</body>
+</html>
+
