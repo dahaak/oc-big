@@ -1,1 +1,12 @@
 Version 1.0.0 16.04.2013
+
+- first version released
+
+Version 1.1.0 18.12.2014
+
+- index.html structured in templates
+- security enhanced by introduction of password token
+- OpenClinica template added
+- central configuration file introduced
+- user sessions introduced
+- smaller bug fixes

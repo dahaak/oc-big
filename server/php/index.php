@@ -12,4 +12,6 @@
 
 error_reporting(E_ALL | E_STRICT);
 require('UploadHandler.php');
+$_POST['id'] = "_TestJG_input1796";//$_GET['id'];
 $upload_handler = new UploadHandler();
+?>
