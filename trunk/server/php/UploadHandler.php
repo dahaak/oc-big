@@ -1,4 +1,6 @@
 <?php
+// Use $_SESSION variables
+session_start();
 /*
  * jQuery File Upload Plugin PHP Class 6.1.2
  * https://github.com/blueimp/jQuery-File-Upload
@@ -37,9 +39,10 @@ class UploadHandler
     function __construct($options = null, $initialize = true) {
         $this->options = array(
             'script_url' => $this->get_full_url().'/',
-            'upload_dir' => dirname($_SERVER['SCRIPT_FILENAME']).'/files/',
-	    /* Adding the openclinica_upload_dir where all files are copied to - prav 300313 */
-	    'openclinica_upload_dir' => dirname($_SERVER['SCRIPT_FILENAME']).'/openclinica/',
+			// IMI: Added a unique id to the folder name, this allows for multiple uploads at the same time
+            'upload_dir' => dirname($_SERVER['SCRIPT_FILENAME']).'/files'.$_SESSION['oc_field'].'/',
+			// IMI: Upload files to fixed path
+			'openclinica_upload_dir' => $_SESSION['oc_uploadDirLinux'],
             'upload_url' => $this->get_full_url().'/files/',
             'user_dirs' => false,
             'mkdir_mode' => 0755,
@@ -58,10 +61,12 @@ class UploadHandler
                 'PATCH',
                 'DELETE'
             ),
+			// IMI: added Content-Description
             'access_control_allow_headers' => array(
                 'Content-Type',
                 'Content-Range',
-                'Content-Disposition'
+                'Content-Disposition',
+				'Content-Description'
             ),
             // Enable to provide file downloads via GET requests to the PHP script:
             'download_via_php' => false,
@@ -327,7 +332,7 @@ class UploadHandler
             $img_width,
             $img_height
         ) && $write_image($new_img, $new_file_path, $image_quality);
-        // Free up memory (imagedestroy does not delete files):
+        // Free up memory (imagedestroy does not delete files)
         @imagedestroy($src_img);
         @imagedestroy($new_img);
         return $success;
@@ -390,25 +395,42 @@ class UploadHandler
             $file->error = $this->get_error_message('max_number_of_files');
             return false;
         }
-        list($img_width, $img_height) = @getimagesize($uploaded_file);
-        if (is_int($img_width)) {
-            if ($this->options['max_width'] && $img_width > $this->options['max_width']) {
-                $file->error = $this->get_error_message('max_width');
-                return false;
-            }
-            if ($this->options['max_height'] && $img_height > $this->options['max_height']) {
-                $file->error = $this->get_error_message('max_height');
-                return false;
-            }
-            if ($this->options['min_width'] && $img_width < $this->options['min_width']) {
-                $file->error = $this->get_error_message('min_width');
-                return false;
-            }
-            if ($this->options['min_height'] && $img_height < $this->options['min_height']) {
-                $file->error = $this->get_error_message('min_height');
-                return false;
-            }
-        }
+/* JGehlen
+ * code deleted due to causing break in upload of m12 files
+ * the next line causes the break, the checks are not needed
+ */
+//       list($img_width, $img_height) = @getimagesize($uploaded_file);
+//		//JGehlen validate check
+//		error_log("errorJG: image values set", '0');
+//        if (is_int($img_width)) {
+//		//JGehlen validate check
+//		error_log("errorJG: image checks started", '0');
+//            if ($this->options['max_width'] && $img_width > $this->options['max_width']) {
+//                $file->error = $this->get_error_message('max_width');
+//                return false;
+//		//JGehlen validate check
+//		error_log("JG error: 4", '0');
+//            }
+//            if ($this->options['max_height'] && $img_height > $this->options['max_height']) {
+//                $file->error = $this->get_error_message('max_height');
+//                return false;
+//		//JGehlen validate check
+//		error_log("JG error: 5", '0');
+//            }
+//            if ($this->options['min_width'] && $img_width < $this->options['min_width']) {
+//                $file->error = $this->get_error_message('min_width');
+//                return false;
+//		//JGehlen validate check
+//		error_log("JG error: 6", '0');
+//            }
+//            if ($this->options['min_height'] && $img_height < $this->options['min_height']) {
+//                $file->error = $this->get_error_message('min_height');
+//                return false;
+//		//JGehlen validate check
+//		error_log("JG error: 7", '0');
+//            }
+//        }
+		
         return true;
     }
 
@@ -457,8 +479,8 @@ class UploadHandler
             preg_match('/^image\/(gif|jpe?g|png)/', $type, $matches)) {
             $name .= '.'.$matches[1];
         }
-	/* Changing the file name to include OpenClinica parameters of CRFId and Patient ID - prav 290313 */
-	$name=($this->get_studyName_param()."_".$this->get_patient_id_param()."_".$name);
+	/* Changing the file name to include OpenClinica parameters of CRFId and Patient ID - prav 290313, edited jg 150713 */
+	$name = $this->get_studyName_param()."_".$this->get_event_number_param()."_".$this->get_patient_id_param()."_".$name;
         return $name;
     }
 
@@ -543,39 +565,43 @@ class UploadHandler
             }
             $file_size = $this->get_file_size($file_path, $append_file);
             if ($file_size === $file->size) {
-                if ($this->options['orient_image']) {
-                    $this->orient_image($file_path);
-                }
-                $file->url = $this->get_download_url($file->name);
-                foreach($this->options['image_versions'] as $version => $options) {
-                    if ($this->create_scaled_image($file->name, $version, $options)) {
-                        if (!empty($version)) {
-                            $file->{$version.'_url'} = $this->get_download_url(
-                                $file->name,
-                                $version
-                            );
-                        } else {
-                            $file_size = $this->get_file_size($file_path, true);
-                        }
-                    }
-                }
+
+/* JGehlen
+ * code deleted due to causing break in upload of m12 files
+ */
+//                if ($this->options['orient_image']) {
+//                   $this->orient_image($file_path);
+//                }
+//                $file->url = $this->get_download_url($file->name);
+//                foreach($this->options['image_versions'] as $version => $options) {
+//                    if ($this->create_scaled_image($file->name, $version, $options)) {
+//                       if (!empty($version)) {
+//                            $file->{$version.'_url'} = $this->get_download_url(
+ //                               $file->name,
+//                                $version
+//                            );
+//                        } else {
+//                            $file_size = $this->get_file_size($file_path, true);
+//                       }
+//                   }
+//                }
             } else if (!$content_range && $this->options['discard_aborted_uploads']) {
                 unlink($file_path);
                 $file->error = 'abort';
             }
             $file->size = $file_size;
             $this->set_file_delete_properties($file);
-
-            /* Modifications to handle zipped files and to copy files to openclinica directories - prav 130413 */
-            if ($this->is_zip_valid($file->name)) {
-                /* If zip file, it has to be further processed. */
-                /* Checks for zip files, extracts, renames and copies into openclinica directory */
-                $this->check_if_zip_and_unzip($file->name);
-            } else {
-            /* If it is not a zip file, simply copy the file to openclinica directory. */
-            $this->copy_file_to_openclinica_dir($file->name);
-            }
-
+//Unzip removed
+//			$this->copy_file_to_openclinica_dir($file->name);
+			
+           // IMI: Modifications to handle blob files and to copy files to openclinica directories           
+           if ($this->is_zip_valid($file->name) && substr($file->name,-4) == "blob") {
+               // Unzip blob file
+               $this->check_if_zip_and_unzip($file->name);
+          	} else {
+           		// Copy file to final folder on server
+           		$this->copy_file_to_openclinica_dir($file->name);
+          	}
         }
         return $file;
     }
@@ -631,10 +657,14 @@ class UploadHandler
     /* Gets study name parameter passed through the URL. - prav 130413 */
     protected function get_studyName_param() {
         parse_str(parse_url($this->get_referer_url(), PHP_URL_QUERY), $parsed_referer_query);
-	//error_log("undefined issues thingy".$parsed_referer_query['studyName'], '0');
         return isset($parsed_referer_query['studyName']) ? $parsed_referer_query['studyName'] : null;
 	}
 
+	/* Gets event number parameter passed through the URL. - jg 150713 */
+    protected function get_event_number_param() {
+        parse_str(parse_url($this->get_referer_url(), PHP_URL_QUERY), $parsed_referer_query);
+        return isset($parsed_referer_query['visit']) ? $parsed_referer_query['visit'] : null;
+	}
     /* Gets patient id parameter passed through the URl. - prav 130413 */
     protected function get_patient_id_param() {
         parse_str(parse_url($this->get_referer_url(), PHP_URL_QUERY), $parsed_referer_query);
@@ -644,13 +674,11 @@ class UploadHandler
     /* Copies files to openclinica directory, creates one if it does not exist. - prav 130413 */
     protected function copy_file_to_openclinica_dir($file_name = null) {
         $openclinica_upload_dir = $this->get_openclinica_upload_path();
-        // error_log("Function copy_file_to_openclinica_dir openclinica_upload_dir ".$openclinica_upload_dir, '0');
         if (!is_dir($openclinica_upload_dir)) {
              mkdir($openclinica_upload_dir, $this->options['mkdir_mode'], true);
         }
 	$file_path = $this->get_upload_path($file_name);
 	$openclinica_file_path = $this->get_openclinica_upload_path($file_name);
-	//error_log("Function copy_file_to_openclinica_dir openclinica_file_path and file_path ".$openclinica_file_path." ".$file_path, '0');
         copy($file_path, $openclinica_file_path);
         return; 
         }
@@ -681,15 +709,13 @@ class UploadHandler
         if ($zip->open($this->get_upload_path($zip_file_name)) === TRUE) {
             for($i = 0; $i < $zip->numFiles; $i++) {
                    $filenamepath = $this->get_upload_path($zip->getNameIndex($i))."";
-                   $filenamechanged = $this->get_studyName_param()."_".$this->get_patient_id_param()."_".$zip->getNameIndex($i)."";
+                   $filenamechanged = $_SESSION['oc_studyName']."_visit".$_SESSION['oc_visit']."_".$_SESSION['oc_field']."_".$zip->getNameIndex($i)."";
                    $filenamechangedpath = $this->get_upload_path().$filenamechanged."";
                    $zip->extractTo($this->get_upload_path(), array($zip->getNameIndex($i)));
                    rename("$filenamepath", "$filenamechangedpath");
                    $this->copy_file_to_openclinica_dir($filenamechanged);
-                   //error_log("Name of the file after change is ".$filenamechangedpath, '0');
             }
         $zip->close();
-        //error_log("File has been successfully extracted, renamed and copied to openclinica folder.", '0');
         } else {
            error_log("ERROR File is not extracted.", '0');
         }
@@ -808,7 +834,9 @@ class UploadHandler
         if ($upload && is_array($upload['tmp_name'])) {
             // param_name is an array identifier like "files[]",
             // $_FILES is a multi-dimensional array:
+			$countJG = 1;
             foreach ($upload['tmp_name'] as $index => $value) {
+				$countJG = $countJG +1;
                 $files[] = $this->handle_file_upload(
                     $upload['tmp_name'][$index],
                     $file_name ? $file_name : $upload['name'][$index],

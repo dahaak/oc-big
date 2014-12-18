@@ -12,6 +12,42 @@
 /*jslint nomen: true, unparam: true, regexp: true */
 /*global define, window, URL, webkitURL, FileReader */
 
+// IMI: Set allowed number of files
+function numberFiles() {
+	if(getParam('allowedNr') != null) {
+		//set number of files according to URL
+		return parseInt(getParam('allowedNr'), 10);
+	} else {
+		//use a default max number of files
+		return 10;
+	}
+}
+// IMI: Set allowed file types, due to loading time problems blob is allowed by default
+function acceptedFileTypes() {
+	// Get path from URL and crop current page
+	var path = window.location.pathname.replace('/index.php', '');
+	// Initialize return value
+	var temp = '/';
+	// Check if file types are set in URL
+	if(getParam('fileType') != null) {
+		// Extract file types from URL
+		var fileTypes = getParam('fileType');
+		// Separate fie types in an array
+		var typeArray = fileTypes.split(',');
+		// Build regex
+		for (var i = 0; i < typeArray.length; i++) {
+			temp += '.+('+typeArray[i]+')$|';
+		}
+		// Add binary large objects per default
+		temp += 'undefined/i';
+		return temp;		
+	} else {
+		// Allow any file type
+		temp += '.+$/i';
+		return temp;
+	}
+}
+
 (function (factory) {
     'use strict';
     if (typeof define === 'function' && define.amd) {
@@ -36,7 +72,7 @@
     // The UI version extends the file upload widget
     // and adds complete user interface interaction:
     $.widget('blueimp.fileupload', $.blueimp.fileupload, {
-
+    	
         options: {
             // By default, files added to the widget are uploaded as soon
             // as the user clicks on the start buttons. To enable automatic
@@ -44,14 +80,16 @@
             autoUpload: false,
             // The following option limits the number of files that are
             // allowed to be uploaded using this widget:
-            maxNumberOfFiles: undefined,
+            // IMI: changed allowed number of files allowed, set within function, default: undefined
+			maxNumberOfFiles: numberFiles(),
             // The maximum allowed file size:
             maxFileSize: undefined,
             // The minimum allowed file size:
             minFileSize: undefined,
             // The regular expression for allowed file types, matches
             // against either file type or file name:
-            acceptFileTypes:  /.+$/i,
+			// IMI: changed allowed type of files allowed, set within function, default: /.+$/i
+			acceptFileTypes: acceptedFileTypes(),
             // The regular expression to define for which files a preview
             // image is shown, matched against the file type:
             previewSourceFileTypes: /^image\/(gif|jpeg|png)$/,
