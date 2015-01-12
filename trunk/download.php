@@ -30,8 +30,10 @@ if(!$savePath){
     header("Cache-Control: public");
     header("Content-Description: File Transfer");
     header("Content-Disposition: attachment; filename=$file");
-    //header("Content-Type: application/zip");
-    //header("Content-Transfer-Encoding: binary");
+	
+	// Currently set to image/png to support download of image data as prepared in the sample eCRF. PLEASE ADAPT!
+    header("Content-Type: image/png");
+
     // read the file from disk
     readfile($savePath);
 }
