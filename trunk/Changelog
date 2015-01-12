@@ -10,3 +10,8 @@ Version 1.1.0 18.12.2014
 - central configuration file introduced
 - user sessions introduced
 - smaller bug fixes
+
+Version 1.1.1 12.01.2015
+
+- eCRF for sample application adapted
+- download.php for sample application fixed
