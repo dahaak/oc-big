@@ -205,7 +205,7 @@
 			//with the chosen CSS:
 			'style="' + vCSS + '" ' +
 			//alternative text:
-			'alt="Image not found." ' + 
+			'alt="" ' + 
 			//image:
 			'src="'+ imageLink + '"></div>';
 	}
