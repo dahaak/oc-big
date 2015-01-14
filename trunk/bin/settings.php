@@ -10,7 +10,7 @@
 // Path to folder in Apache
 $_SESSION['oc_apache'] = '//var/www/basic/';
 // The folder to store the data permanently
-$_SESSION['oc_uploadDirLinux'] = '//mnt/data/openclinica/';
+$_SESSION['oc_uploadDirLinux'] = '//mnt/big-data/openclinica/boostfund/';
 // Title in index.php 
 $_SESSION['oc_header'] = 'OC-Big';
 
@@ -20,7 +20,7 @@ $_SESSION['oc_header'] = 'OC-Big';
 // Add zipping to upload options => show Zip and Upload section
 $_SESSION['oc_zip'] = 0;
 // Set security token => only allow upload with this token in URL
-$_SESSION['oc_token'] = 'test1234!';
+$_SESSION['oc_token'] = '0eaa542f1661be753e3a2ca698b517f7';
 
 /*
  * Add URL variables to the global array $_SESSION, the if clause excludes these calls on download.php
