@@ -26,7 +26,7 @@
 				// Change default input width (initial input only)
 				$(this).parent().parent().find('input').css({'width':widthQ});
 				// Show and enable button, image and links for the set number of upload buttons
-				$(this).parent().append('<input type="button" class="button_medium" value="Upload image" id="IMGbutton'+count+'">');
+				$(this).parent().append('<input type="button" class="button_medium" value="Upload" id="IMGbutton'+count+'">');
 				$(this).parent().append(	'<script>'+
 												'jQuery(document).ready(function($) {\n'+
 													'$("#IMGbutton'+count+'").click(function(){\n'+
