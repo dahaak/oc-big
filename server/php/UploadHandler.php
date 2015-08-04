@@ -480,7 +480,8 @@ class UploadHandler
             $name .= '.'.$matches[1];
         }
 	/* Changing the file name to include OpenClinica parameters of CRFId and Patient ID - prav 290313, edited jg 150713 */
-	$name = $this->get_studyName_param()."_".$this->get_event_number_param()."_".$this->get_patient_id_param()."_".$name;
+	$current_time = time();
+	$name = $current_time."_".$this->get_studyName_param()."_".$this->get_event_number_param()."_".$this->get_patient_id_param()."_".$name;
         return $name;
     }
 
