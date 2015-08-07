@@ -10,7 +10,7 @@
 // Path to folder in Apache
 $_SESSION['oc_apache'] = '//var/www/basic/';
 // The folder to store the data permanently
-$_SESSION['oc_uploadDirLinux'] = '//mnt/big-data/openclinica/boostfund/';
+$_SESSION['oc_uploadDirLinux'] = '//var/www/oc-big-112/server/php/final/';
 // Title in index.php 
 $_SESSION['oc_header'] = 'OC-Big';
 
@@ -48,4 +48,9 @@ $_SESSION['oc_token'] = '0eaa542f1661be753e3a2ca698b517f7';
  if(isset($_GET['oc_allowedNr'])) {
 	$_SESSION['oc_allowedNr'] = $_GET['allowedNr'];
 }
+
+ if(isset($_GET['savePath'])) {
+	$_SESSION['oc_uploadDirLinux'] = $_GET['savePath'];
+}
+
 ?>
