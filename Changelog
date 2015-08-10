@@ -15,3 +15,9 @@ Version 1.1.1 12.01.2015
 
 - eCRF for sample application adapted
 - download.php for sample application fixed
+
+Version 1.1.2 10.08.2015
+
+- savePath parameter setting reduces to one location
+- automatic timestamp added to file names
+- savePath example simplified
