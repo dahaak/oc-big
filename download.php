@@ -25,7 +25,9 @@ if(!$savePath){
 		die('wrong request');
 	}
 	$fileSplit = explode("/", $savePath);
-	$file = $fileSplit[5];
+	
+	// Depends on savePath and has to be adapted
+	$file = $fileSplit[7];
 	// Prepare download
     header("Cache-Control: public");
     header("Content-Description: File Transfer");
