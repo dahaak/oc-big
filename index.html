@@ -71,8 +71,12 @@
 <h2>
 <a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h2>
 
+<p><strong>Attention:</strong>
+In the current version, OpenClinica has to be configured to be running through the Apache (Port 80) instead of Tomcat (Port 8080) to get OC-Big working. Since OC-Big has to be running in Apache, cross domain calls would be performed during communication with OpenClinica. These calls are usually forbidden by the browsers and cannot be executed. 
+The following manual assumes that OpenClinica should be also running through Apache and explains how this can be set up (step 3).</p>
+
 <h3>
-<a id="1-install-openclinica" class="anchor" href="#1-install-openclinica" aria-hidden="true"><span class="octicon octicon-link"></span></a>1. Install !OpenClinica</h3>
+<a id="1-install-openclinica" class="anchor" href="#1-install-openclinica" aria-hidden="true"><span class="octicon octicon-link"></span></a>1. Install OpenClinica</h3>
 
 <p>If not already done, install OpenClinica with all requirements. Installation guides for Linux/Windows can be found <a href="https://docs.openclinica.com/installation">here</a>. The following manual is based on a Linux (Debian) installation of !OpenClinica.</p>
 
@@ -88,7 +92,40 @@
 <h3>
 <a id="3-install-apache-tomcat-connector" class="anchor" href="#3-install-apache-tomcat-connector" aria-hidden="true"><span class="octicon octicon-link"></span></a>3. Install Apache Tomcat Connector</h3>
 
-<p>Apache has to communicate with Tomcat. For this, the Apache Tomcat Connector has to be installed and its <em>jk.conf</em> file edited. A manual can be found <a href="http://tomcat.apache.org/connectors-doc/">here</a>.</p>
+<p>As explained in the introduction, we now have to configure OpenClinica to be additionally running in Apache. For this we have to forward Apache calls on Port 80 to our OpenClinica location in Tomcat on Port 8080 via mod_jk. </p>
+
+<p>First we install mod_jk</p>
+
+<p><code>aptitude install libapache2-mod-jk</code></p>
+
+<p>After this, we configure the workers.properties file in <em>/etc/libapache2-mod-jk</em>. It should look like this:</p>
+
+<p><code>workers.tomcat_home=/usr/share/tomcat7
+workers.java_home=/usr/lib/jvm/default-java
+ps=/
+worker.list=ajp13_worker
+worker.ajp13_worker.port=8009
+worker.ajp13_worker.host=localhost
+worker.ajp13_worker.type=ajp13
+worker.ajp13_worker.lbfactor=1
+worker.loadbalancer.type=lb
+worker.loadbalancer.balance_workers=ajp13_worker</code></p>
+
+<p>But, <code>workers.tomcat_home</code> and <code>workers.java_home</code> have to be adapted to your Tomcat/Java home directories.</p>
+
+<p>After this, we configure Tomcat in so far, that it will allow mod_jk calls. For this, we uncomment the following lines in Tomcat’s <em>server.xml</em> in <em>/conf/</em> of your Tomcat root folder:</p>
+
+<p><code>&lt;Connector port="8009" protocol="AJP/1.3" redirectPort="8443" /&gt;</code></p>
+
+<p>In the next step, we have to load OpenClinica from Tomcat into Apache. For this, we modify the <em>jk.conf</em> in <em>/etc/apache2/mods-available</em> and add the following lines</p>
+
+<p><code>JkMount /openclinica/* ajp13_worker
+    JkMountCopy All</code></p>
+
+<p>In the first line our OpenClinica web app folder <em>/openclinica/</em>(adapt this line here, if you changed the name) and all its sub-content is released for Apache forwarding.
+The second lines says that this configuration should be automatically adapted to all (virtual)-hosts defined in Apache.</p>
+
+<p>Now, we just have to restart Apache and Tomcat. After this our OpenClinica installation should be available at <a href="http://hostname/OpenClinica">http://hostname/OpenClinica</a>. In addition, it should be still available at <a href="http://hostname:8080/OpenClinica">http://hostname:8080/OpenClinica</a>, but when accessing it this way, OC-Big might not work due to cross domain calls.</p>
 
 <h3>
 <a id="4-install-php" class="anchor" href="#4-install-php" aria-hidden="true"><span class="octicon octicon-link"></span></a>4. Install PHP</h3>
@@ -110,7 +147,7 @@
  # install it via PECL, e.g. install PECL, modify the <em>php.ini</em> file and uncomment zip.so. </p>
 
 <h3>
-<a id="6-extract-oc-big-111zip-to-a-temporary-folder" class="anchor" href="#6-extract-oc-big-111zip-to-a-temporary-folder" aria-hidden="true"><span class="octicon octicon-link"></span></a>6. Extract oc-big-111.zip to a temporary folder</h3>
+<a id="6-extract-oc-big-112zip-to-a-temporary-folder" class="anchor" href="#6-extract-oc-big-112zip-to-a-temporary-folder" aria-hidden="true"><span class="octicon octicon-link"></span></a>6. Extract oc-big-112.zip to a temporary folder</h3>
 
 <p>The zip file contains the directories</p>
 
@@ -128,28 +165,17 @@
 <h3>
 <a id="7-copy-contents-on-server" class="anchor" href="#7-copy-contents-on-server" aria-hidden="true"><span class="octicon octicon-link"></span></a>7. Copy contents on server</h3>
 
-<p>Copy the complete content of oc-big-111.zip into a folder in your Apache's default document root directory (e.g /var/www/oc-big-111/).</p>
-
-<h3>
-<a id="8-configure-mod_jk" class="anchor" href="#8-configure-mod_jk" aria-hidden="true"><span class="octicon octicon-link"></span></a>8. Configure mod_jk</h3>
-
-<p>Add your oc-big-111 folder to the <em>jk.conf</em> file of mod_jk with the following statement:</p>
-
-<p><code>JkUnMount /oc-big-111/* ajp13_worker</code></p>
-
-<p>After this, restart apache again:</p>
-
-<p><code>/etc/init.d/apache2 restart</code> </p>
+<p>Copy the complete content of oc-big-112.zip into a folder in your Apache's default document root directory (e.g /var/www/oc-big-112/).</p>
 
 <h3>
 <a id="8-set-folder-permissions" class="anchor" href="#8-set-folder-permissions" aria-hidden="true"><span class="octicon octicon-link"></span></a>8. Set folder permissions</h3>
 
-<p>In the directories /server/php/ and /mnt/data/openclinica/ the transferred files are stored, so these directories need write permissions (777).</p>
+<p>In the directories <em>/server/php/</em> and <em>/server/php/files/</em> the transferred files are stored, so these directories need write permissions (777).</p>
 
 <h3>
 <a id="9-copy-pop-up-call-script-into-your-openclinica-tomcat-folder" class="anchor" href="#9-copy-pop-up-call-script-into-your-openclinica-tomcat-folder" aria-hidden="true"><span class="octicon octicon-link"></span></a>9. Copy Pop-Up call script into your OpenClinica Tomcat folder</h3>
 
-<p>The script /openclinica/showImageUpload.js has to be copied into your OpenClinica Tomcat folder. After a backup, create a folder (e.g. /javascripts/) inside the OpenClinica webapp folder and copy the script file here. This script has to be available inside Tomcat, because it is called from OpenClinica itself.</p>
+<p>The script <em>/openclinica/showImageUpload.js</em> has to be copied into your OpenClinica Tomcat folder. After a backup, create a folder (e.g. /javascripts/) inside the OpenClinica webapp folder and copy the script file here. This script has to be available inside Tomcat, because it is called from OpenClinica itself.</p>
 
 <h3>
 <a id="10-customize-ecrf" class="anchor" href="#10-customize-ecrf" aria-hidden="true"><span class="octicon octicon-link"></span></a>10. Customize eCRF</h3>
@@ -169,7 +195,7 @@
 
 <p>OC-Big can be configured directly in the eCRF by modification of the upload button tag. In the sample eCRF it is as follows:</p>
 
-<p><code>&lt;span class="uploadButton" widthQ="240px" fileType="png" fileCount="1" imgWidth="240px" imgFloat="right" imgDefault="/openclinica/crfImages/default.png" apacheBD="oc-big-111" savePath="//mnt/data/openclinica/"  token="test1234!"/&gt;</code></p>
+<p><code>&lt;span class="uploadButton" widthQ="240px" fileType="png" fileCount="1" imgWidth="240px" imgFloat="right" imgDefault="/openclinica/crfImages/default.png" apacheBD="oc-big-112" savePath="/var/www/oc-big-112/server/php/final/” token="test1234!"/&gt;</code></p>
 
 <p>You can modify the following parameters to adapt OC-Big to your needs:</p>
 
@@ -182,9 +208,9 @@
 <li>
 <strong>imgDefault:</strong> Location of default image showed in the eCRF beside of the OC-Big button.</li>
 <li>
-<strong>apacheBD:</strong> Name of the OC-Big instance, which is used. If your OC-Big code is in a folder named "oc-big-111" (as described in the manual), "oc-big-111" has to be set here.</li>
+<strong>apacheBD:</strong> Name of the OC-Big instance, which is used. If your OC-Big code is in a folder named "oc-big-112" (as described in the manual), "oc-big-111" has to be set here.</li>
 <li>
-<strong>savePath:</strong> Path where transferred files are finally stored. <em>Note:</em> On changing this you currently also have to adapt the <em>savePath</em> in <em>settings.php</em> and (perhaps) the extraction of the filenames in <em>download.php</em>.</li>
+<strong>savePath:</strong> Path where transferred files are finally stored. Note: On changing this you propbably also have to adapt the extraction of the filenames in <em>download.php</em>.</li>
 <li>
 <strong>token:</strong> Token to avoid calls of OC-Big from outside the eCRF. The token value in the eCRF and in <em>settings.php</em> have to be the same. The longer this value, the lower the risk of unwanted OC-Big calls from outside. <em>Note:</em> Please change the token value before integration. </li>
 </ul>
